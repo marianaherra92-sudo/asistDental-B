@@ -1,0 +1,9 @@
+const express = require('express');
+const router = express.Router();
+const antecedentesController = require('../controllers/antecedentesController');
+
+router.post('/', antecedentesController.createAntecedente);
+router.put('/:id', antecedentesController.updateAntecedente);
+router.delete('/:id', antecedentesController.deleteAntecedente);
+
+module.exports = router;
