@@ -8,6 +8,9 @@ const pacienteCompletoController = require('./routes/pacienteCompletoRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const examenRoutes = require('./routes/examenRoutes');
 const antecedentesRoutes = require('./routes/antecedentesRoutes');
+const agendaRoutes = require('./routes/agendaRoutes');
+const citasRoutes = require('./routes/citasRoutes');
+const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 
 app.use(helmet());
@@ -20,6 +23,11 @@ app.use('/api', pacienteCompletoController);
 app.use('/pacientes', pacienteRoutes);
 app.use('/examenes', examenRoutes);
 app.use('/antecedentes', antecedentesRoutes);
+app.use('/agenda', agendaRoutes);
+app.use('/citas', citasRoutes);
+
+app.use(errorHandler);
+
 
 app.get('/', (req, res) => {
   res.send('API AsistDental Backend funcionando correctamente');
