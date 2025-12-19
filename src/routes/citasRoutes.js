@@ -10,5 +10,6 @@ router.patch('/:id/cancelar', ctrl.cancelar);
 router.patch('/:id/confirmar', ctrl.confirmar);
 router.patch('/:id/completar', ctrl.completar);
 router.patch('/:id/reagendar', ctrl.reagendar);
+router.get('/paciente/:id_paciente', ctrl.listByPaciente);
 
 module.exports = router;

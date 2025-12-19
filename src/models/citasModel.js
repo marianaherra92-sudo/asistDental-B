@@ -99,7 +99,22 @@ const CitasModel = {
              WHERE id_cita = ?`,
             [data.fecha_cita, data.hora_inicio, data.hora_fin, id_cita]
         );
-    }
+    },
+
+    getByPaciente(id_paciente) {
+        return db.execute(
+            `SELECT c.*,
+                cl.nombre AS clinica,
+                d.nombre AS dentista
+         FROM citas c
+         JOIN clinicas cl ON cl.id_clinica = c.id_clinica
+         JOIN dentistas d ON d.id_dentista = c.id_dentista
+         WHERE c.id_paciente = ?
+         ORDER BY c.fecha_cita DESC, c.hora_inicio DESC`,
+            [id_paciente]
+        );
+    },
+
 };
 
 module.exports = CitasModel;

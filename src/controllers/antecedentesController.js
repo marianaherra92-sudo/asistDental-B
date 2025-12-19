@@ -80,3 +80,23 @@ exports.deleteAntecedente = async (req, res) => {
         res.status(500).json({ error: "Error interno al eliminar antecedente" });
     }
 };
+
+exports.getAntecedentesByPaciente = async (req, res) => {
+    try {
+        const { id_paciente } = req.params;
+
+        if (!id_paciente) {
+            return res.status(400).json({
+                error: "id_paciente es obligatorio"
+            });
+        }
+
+        const antecedentes = await Antecedentes.getByPaciente(id_paciente);
+
+        res.json(antecedentes);
+
+    } catch (error) {
+        console.error("Error al obtener antecedentes:", error);
+        res.status(500).json({ error: "Error interno al obtener antecedentes" });
+    }
+};

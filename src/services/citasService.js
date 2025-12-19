@@ -81,7 +81,12 @@ const CitasService = {
         const [rows] = await CitasModel.hasOverlap(data);
         if (rows[0].total > 0) throw new Error('Horario no disponible');
         return CitasModel.update(id_cita, data);
-    }
+    },
+
+    getCitasByPaciente(id_paciente) {
+        return CitasModel.getByPaciente(id_paciente);
+    },
+
 };
 
 module.exports = CitasService;

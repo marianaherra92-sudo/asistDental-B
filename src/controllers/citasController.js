@@ -78,3 +78,14 @@ exports.reagendar = async (req, res, next) => {
         res.status(400).json({ message: err.message });
     }
 };
+
+exports.listByPaciente = async (req, res, next) => {
+    try {
+        const { id_paciente } = req.params;
+        const [rows] = await CitasService.getCitasByPaciente(id_paciente);
+        res.json(rows);
+    } catch (err) {
+        next(err);
+    }
+};
+

@@ -12,9 +12,11 @@ const ExamenInicialIntraoral = {
         lengua,
         piso_boca,
         paladar_duro,
-        tipo_oclusion
+        tipo_oclusion,
+        paladar_blando,
+        reborde_residual
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?,?,?)
       `,
             [
                 data.id_paciente,
@@ -23,7 +25,9 @@ const ExamenInicialIntraoral = {
                 data.lengua || null,
                 data.piso_boca || null,
                 data.paladar_duro || null,
-                data.tipo_oclusion || null
+                data.tipo_oclusion || null,
+                data.paladar_blando || null,
+                data.reborde_residual || null
             ]
         );
 

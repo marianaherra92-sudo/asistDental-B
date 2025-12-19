@@ -12,6 +12,7 @@ const agendaRoutes = require('./routes/agendaRoutes');
 const citasRoutes = require('./routes/citasRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 const dentistasRoutes = require('./routes/dentistasRoutes');
+const consultasRoutes = require('./routes/consultasRoutes');
 const app = express();
 
 app.use(helmet());
@@ -27,6 +28,7 @@ app.use('/antecedentes', antecedentesRoutes);
 app.use('/agenda', agendaRoutes);
 app.use('/citas', citasRoutes);
 app.use('/dentistas', dentistasRoutes);
+app.use('/consultas', consultasRoutes);
 
 app.use(errorHandler);
 

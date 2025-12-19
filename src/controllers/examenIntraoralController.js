@@ -22,7 +22,7 @@ exports.updateExamenIntraoral = async (req, res) => {
         const [result] = await db.execute(
             `
       UPDATE examen_clinico_inicial_intraoral
-      SET encia = ?, orofaringe = ?, lengua = ?, piso_boca = ?, paladar_duro = ?, tipo_oclusion = ?
+      SET encia = ?, orofaringe = ?, lengua = ?, piso_boca = ?, paladar_duro = ?, tipo_oclusion = ?, paladar_blando = ?, reborde_residual = ?
       WHERE id_intraoral = ?
       `,
             [
@@ -32,6 +32,8 @@ exports.updateExamenIntraoral = async (req, res) => {
                 req.body.piso_boca || null,
                 req.body.paladar_duro || null,
                 req.body.tipo_oclusion || null,
+                req.body.paladar_blando || null,
+                req.body.reborde_residual || null,
                 id
             ]
         );
@@ -45,5 +47,29 @@ exports.updateExamenIntraoral = async (req, res) => {
     } catch (error) {
         console.error("Error al actualizar examen intraoral:", error);
         res.status(500).json({ error: "Error interno al actualizar examen intraoral" });
+    }
+};
+
+exports.getExamenIntraoralByUsuario = async (req, res) => {
+    try {
+        const { id_paciente } = req.params;
+
+        const [rows] = await db.execute(
+            `
+            SELECT *
+            FROM examen_clinico_inicial_intraoral
+            WHERE id_paciente = ?
+            `,
+            [id_paciente]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "No se encontró examen intraoral para este usuario" });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        console.error("Error al obtener examen intraoral:", error);
+        res.status(500).json({ error: "Error interno al obtener examen intraoral" });
     }
 };
