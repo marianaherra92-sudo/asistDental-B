@@ -1,12 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const Clinica = require('../models/clinicaModel');
+const Clinica = require('../modules/clinica/clinicaModel');
 const Usuario = require('../models/usuarioModel');
 const Rol = require('../models/rolModel');
 const RolPermiso = require('../models/rolPermisoModel');
 const Permiso = require('../models/permisoModel');
-const Dentista = require('../models/dentistaModel');
+const Dentista = require('../modules/dentistas/dentistaModel');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'clave-super-secreta';
 
@@ -104,6 +104,7 @@ exports.login = async (req, res) => {
 
     // 1. Buscar usuario
     const user = await Usuario.findByUsuarioWithRol(usuario);
+    console.log(user);
     if (!user) {
       return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos' });
     }
@@ -122,6 +123,7 @@ exports.login = async (req, res) => {
         {
           id_usuario: user.id_usuario,
           id_clinica: user.id_clinica,
+          id_dentista: user.id_dentista,
           id_rol: user.id_rol,
           permisos
         },
