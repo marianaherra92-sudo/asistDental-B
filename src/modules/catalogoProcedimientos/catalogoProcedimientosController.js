@@ -12,8 +12,20 @@ exports.createCatalogo = async (req, res) => {
 
 exports.getCatalogo = async (req, res) => {
     try {
+        const { id } = req.params;
+        const catalogo = await CatalogoProcedimientos.findById(id);
+
+        if (!catalogo) return res.status(404).json({ mensaje: 'Procedimiento no encontrado' });
+
+        res.json(catalogo);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error interno' });
+    }
+};
+exports.getCatalogoByClinica = async (req, res) => {
+    try {
         const { id_clinica } = req.params;
-        const catalogo = await CatalogoProcedimientos.findById(id_clinica);
+        const catalogo = await CatalogoProcedimientos.findByIdClinica(id_clinica);
 
         if (!catalogo) return res.status(404).json({ mensaje: 'Procedimiento no encontrado' });
 

@@ -50,7 +50,18 @@ const CatalogoProcedimientos = {
         return rows;
     },
 
-    async findById(id_clinica) {
+    async findById(id) {
+        const [rows] = await db.execute(
+            `SELECT c.*, p.precio
+             FROM catalogo_procedimientos c
+             LEFT JOIN precios_procedimientos p
+             ON c.id_catalogo_procedimiento = p.id_catalogo_procedimiento
+             WHERE c.id_catalogo_procedimiento = ?`,
+            [id]
+        );
+        return rows[0];
+    },
+    async findByIdClinica(id_clinica) {
         const [rows] = await db.execute(
             `SELECT c.*, p.precio
              FROM catalogo_procedimientos c

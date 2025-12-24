@@ -61,24 +61,83 @@ const Tratamiento = {
     },
 
     async findById(id_plan) {
-        const [rows] = await db.execute(
+
+        const [planRows] = await db.execute(
             `SELECT * FROM plan_tratamiento WHERE id_plan = ?`,
             [id_plan]
         );
-        return rows[0];
+
+        if (!planRows.length) return null;
+
+        const plan = planRows[0];
+
+        const [procRows] = await db.execute(
+            `
+            SELECT 
+                ptp.id_plan,
+                ptp.id_catalogo_procedimiento,
+                cp.nombre,
+                cp.descripcion,
+                ptp.status,
+                ptp.cantidad,
+                ptp.precio_unitario,
+                pp.precio AS precio_base
+            FROM plan_tratamiento_procedimientos ptp
+            INNER JOIN catalogo_procedimientos cp
+                ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
+            LEFT JOIN precios_procedimientos pp
+                ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
+            WHERE ptp.id_plan = ?
+            `,
+            [id_plan]
+        );
+
+        plan.procedimientos = procRows;
+
+        return plan;
     },
 
     async findByPaciente(id_paciente) {
-        const [rows] = await db.execute(
+
+        const [plans] = await db.execute(
             `
-      SELECT *
-      FROM plan_tratamiento
-      WHERE id_paciente = ?
-      ORDER BY fecha_inicio DESC
-      `,
+            SELECT *
+            FROM plan_tratamiento
+            WHERE id_paciente = ?
+            ORDER BY fecha_inicio DESC
+            `,
             [id_paciente]
         );
-        return rows;
+
+        if (!plans.length) return [];
+
+        const ids = plans.map(p => p.id_plan);
+
+        const [procedimientos] = await db.query(
+            `
+            SELECT 
+                ptp.id_plan,
+                ptp.id_catalogo_procedimiento,
+                cp.nombre,
+                cp.descripcion,
+                ptp.status,
+                ptp.cantidad,
+                ptp.precio_unitario,
+                pp.precio AS precio_base
+            FROM plan_tratamiento_procedimientos ptp
+            INNER JOIN catalogo_procedimientos cp
+                ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
+            LEFT JOIN precios_procedimientos pp
+                ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
+            WHERE ptp.id_plan IN (?)
+            `,
+            [ids]
+        );
+
+        return plans.map(plan => ({
+            ...plan,
+            procedimientos: procedimientos.filter(p => p.id_plan === plan.id_plan)
+        }));
     },
 
     async update(id_plan, data) {
