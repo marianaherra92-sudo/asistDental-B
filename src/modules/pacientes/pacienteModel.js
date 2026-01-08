@@ -44,14 +44,14 @@ const Paciente = {
     return rows[0];
   },
   async findByClinica(id_clinica) {
-    const [rows] = await db.execute('SELECT * FROM pacientes WHERE id_clinica = ? AND activo = true', [id_clinica]);
+    const [rows] = await db.execute('SELECT * FROM pacientes WHERE id_clinica = ?', [id_clinica]);
     return rows;
   },
   async update(id_paciente, data) {
-    // Por brevedad solo un ejemplo, agrega más campos según sea necesario
+
     const [result] = await db.execute(
-        `UPDATE pacientes SET nombre=?, apellido_paterno=?, apellido_materno=?, telefono=?, correo=?, direccion=?, activo=? WHERE id_paciente=?`, 
-        [data.nombre, data.apellido_paterno, data.apellido_materno, data.telefono, data.correo, data.direccion, data.activo, id_paciente]);
+        `UPDATE pacientes SET nombre=?, apellido_paterno=?, apellido_materno=?, telefono=?, correo=?, direccion=?, activo=?, escolaridad=?, ocupacion=? WHERE id_paciente=?`,
+        [data.nombre, data.apellido_paterno, data.apellido_materno, data.telefono, data.correo, data.direccion, data.activo, data.escolaridad, data.ocupacion, id_paciente]);
     return result.affectedRows;
   },
   async delete(id_paciente) {
@@ -61,7 +61,7 @@ const Paciente = {
     
   async findByClinica(id_clinica) {
     const [rows] = await db.execute(
-      'SELECT * FROM pacientes WHERE id_clinica = ? AND activo = true',
+      'SELECT * FROM pacientes WHERE id_clinica = ?',
       [id_clinica]
     );
     return rows;
