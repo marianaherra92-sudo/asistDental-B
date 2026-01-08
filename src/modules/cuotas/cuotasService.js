@@ -2,8 +2,9 @@ const CuotasModel = require('./cuotasModel');
 const db = require('../../config/db');
 
 const CuotasService = {
+
     getCuotas: async () => {
-        return await CuotasModel.getAll();
+        return CuotasModel.getAll();
     },
 
     getCuotaById: async (id_cuota) => {
@@ -13,55 +14,80 @@ const CuotasService = {
     },
 
     getCuotasByPlan: async (id_plan) => {
-        const cuotas = await CuotasModel.getByPlanId(id_plan);
-        if (!cuotas.length) throw new Error('No se encontraron cuotas para este plan');
-        return cuotas;
+        return CuotasModel.getByPlanId(id_plan);
     },
 
     getCuotasByPaciente: async (id_paciente) => {
-        const cuotas = await CuotasModel.getByPacienteId(id_paciente);
-        if (!cuotas.length) throw new Error('No se encontraron cuotas para este paciente');
-        return cuotas;
+        return CuotasModel.getByPacienteId(id_paciente);
     },
 
     createCuota: async (data) => {
-        // Validaciones
         if (!data.id_plan) throw new Error('El id_plan es obligatorio');
         if (!data.id_paciente) throw new Error('El id_paciente es obligatorio');
         if (!data.monto) throw new Error('El monto es obligatorio');
         if (!data.fecha_programada) throw new Error('La fecha_programada es obligatoria');
 
-        const [plan] = await db.query(`SELECT * FROM plan_tratamiento WHERE id_plan = ?`, [data.id_plan]);
-        if (!plan.length) throw new Error('El plan de tratamiento no existe');
+        await validarPlanYPaciente(data.id_plan, data.id_paciente);
 
-        const [paciente] = await db.query(`SELECT * FROM pacientes WHERE id_paciente = ?`, [data.id_paciente]);
-        if (!paciente.length) throw new Error('El paciente no existe');
+        return CuotasModel.create(data);
+    },
 
-        return await CuotasModel.create(data);
+    createManyCuotas: async (cuotas, connection = db) => {
+        if (!Array.isArray(cuotas) || !cuotas.length) {
+            throw new Error('El arreglo de cuotas es inválido');
+        }
+
+        const { id_plan, id_paciente } = cuotas[0];
+        await validarPlanYPaciente(id_plan, id_paciente);
+
+        return CuotasModel.createMany(cuotas, connection);
     },
 
     updateCuota: async (id_cuota, data) => {
         const cuota = await CuotasModel.getById(id_cuota);
         if (!cuota) throw new Error('Cuota no encontrada');
 
-        if (data.id_plan) {
-            const [plan] = await db.query(`SELECT * FROM plan_tratamiento WHERE id_plan = ?`, [data.id_plan]);
-            if (!plan.length) throw new Error('El plan de tratamiento no existe');
+        if (cuota.pagada) {
+            throw new Error('No se puede modificar una cuota pagada');
         }
 
-        if (data.id_paciente) {
-            const [paciente] = await db.query(`SELECT * FROM pacientes WHERE id_paciente = ?`, [data.id_paciente]);
-            if (!paciente.length) throw new Error('El paciente no existe');
+        if (data.id_plan || data.id_paciente) {
+            await validarPlanYPaciente(
+                data.id_plan || cuota.id_plan,
+                data.id_paciente || cuota.id_paciente
+            );
         }
 
-        return await CuotasModel.update(id_cuota, data);
+        return CuotasModel.update(id_cuota, data);
     },
 
+
     deleteCuota: async (id_cuota) => {
-        const affectedRows = await CuotasModel.delete(id_cuota);
-        if (!affectedRows) throw new Error('Cuota no encontrada');
+        const cuota = await CuotasModel.getById(id_cuota);
+        if (!cuota) throw new Error('Cuota no encontrada');
+
+        if (cuota.pagada) {
+            throw new Error('No se puede eliminar una cuota pagada');
+        }
+
+        await CuotasModel.delete(id_cuota);
         return true;
     }
+
 };
+
+async function validarPlanYPaciente(id_plan, id_paciente) {
+    const [[plan]] = await db.query(
+        `SELECT id_plan FROM plan_tratamiento WHERE id_plan = ?`,
+        [id_plan]
+    );
+    if (!plan) throw new Error('El plan de tratamiento no existe');
+
+    const [[paciente]] = await db.query(
+        `SELECT id_paciente FROM pacientes WHERE id_paciente = ?`,
+        [id_paciente]
+    );
+    if (!paciente) throw new Error('El paciente no existe');
+}
 
 module.exports = CuotasService;

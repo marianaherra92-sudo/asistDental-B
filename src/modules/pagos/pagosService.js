@@ -1,6 +1,9 @@
+const db = require('../../config/db');
 const PagosModel = require('./pagosModel');
+const CuotasModel = require('../cuotas/cuotasModel');
 
 const PagosService = {
+
     getPagos: async () => {
         return await PagosModel.getAll();
     },
@@ -13,14 +16,58 @@ const PagosService = {
 
     getPagosByPaciente: async (id_paciente) => {
         const pagos = await PagosModel.getByPacienteId(id_paciente);
-        if (!pagos.length) throw new Error('No se encontraron pagos para este paciente');
-        return pagos;
+        return pagos; // mejor NO lanzar error si está vacío
     },
 
     createPago: async (data) => {
-        if (!data.id_paciente) throw new Error('El id_paciente es obligatorio');
-        if (!data.monto) throw new Error('El monto es obligatorio');
-        return await PagosModel.create(data);
+        const {
+            id_cuota,
+            id_paciente,
+            id_plan,
+            monto,
+            metodo_pago,
+            fecha_pago,
+            referencia,
+            nota,
+        } = data;
+
+        if (!id_paciente || !id_plan || !monto || !metodo_pago) {
+            throw new Error('Datos obligatorios incompletos');
+        }
+
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            const pagoId = await PagosModel.create({
+                id_cuota,
+                id_paciente,
+                id_plan,
+                monto,
+                metodo_pago,
+                fecha_pago,
+                referencia,
+                nota,
+            }, connection);
+
+            if (id_cuota) {
+                await CuotasModel.marcarComoPagada(id_cuota, connection);
+            }
+
+            await connection.commit();
+
+            return {
+                id_pago: pagoId,
+                message: 'Pago registrado correctamente'
+            };
+
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
     },
 
     updatePago: async (id, data) => {
@@ -34,6 +81,7 @@ const PagosService = {
         if (!affectedRows) throw new Error('Pago no encontrado');
         return true;
     }
+
 };
 
 module.exports = PagosService;

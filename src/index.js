@@ -15,8 +15,6 @@ const dentistasRoutes = require('./modules/dentistas/dentistasRoutes');
 const consultasRoutes = require('./modules/consultas/consultasRoutes');
 const tratamientosRoutes = require('./modules/tratamientos/tratamientosRoutes');
 const catalogoProcedimientosRoutes = require('./modules/catalogoProcedimientos/catalogoProcedimientosRoutes');
-const pagosRoutes = require('./modules/pagos/pagosRoutes');
-const cuotasRoutes = require('./modules/cuotas/cuotasRoutes');
 const planesPagoRoutes = require('./modules/pagos/planesPago/planesPagoRputes');
 const odontogramaRoutes = require('./modules/odontogramas/odontogramaRoutes');
 const diagnosticosRoutes = require('./modules/diagnosticos/diagnosticosRoutes');
@@ -43,11 +41,8 @@ app.use('/catalogo-procedimientos', catalogoProcedimientosRoutes);
 app.use('/pagos', pagosRoutes);
 app.use('/cuotas', cuotasRoutes);
 app.use('/planes-pago', planesPagoRoutes);
-
 app.use('/odontogramas', odontogramaRoutes);
 app.use('/diagnosticos', diagnosticosRoutes);
-app.use('/pagos', pagosRoutes);
-app.use('/cuotas', cuotasRoutes);
 app.use(errorHandler);
 
 
