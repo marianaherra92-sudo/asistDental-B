@@ -64,13 +64,13 @@ const CatalogoProcedimientos = {
     async findByIdClinica(id_clinica) {
         const [rows] = await db.execute(
             `SELECT c.*, p.precio
-             FROM catalogo_procedimientos c
-             LEFT JOIN precios_procedimientos p
-             ON c.id_catalogo_procedimiento = p.id_catalogo_procedimiento
-             WHERE c.id_clinica = ?`,
+         FROM catalogo_procedimientos c
+         LEFT JOIN precios_procedimientos p
+         ON c.id_catalogo_procedimiento = p.id_catalogo_procedimiento
+         WHERE c.id_clinica = ?`,
             [id_clinica]
         );
-        return rows[0];
+        return rows; // <-- devuelve todo el arreglo
     },
 
     async update(id, data) {

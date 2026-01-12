@@ -19,6 +19,7 @@ const PlanesPagoController = {
               tratamiento: row.nombre_plan,
               total: row.costo_ajustado,
               estado: row.estado,
+              plan_pago: row.plan_pago,
               cuotas: [],
             };
           }

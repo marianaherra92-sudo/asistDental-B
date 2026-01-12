@@ -71,28 +71,37 @@ const Tratamiento = {
 
         const plan = planRows[0];
 
+        // Procedimientos
         const [procRows] = await db.execute(
             `
-            SELECT 
-                ptp.id_plan,
-                ptp.id_catalogo_procedimiento,
-                cp.nombre,
-                cp.descripcion,
-                ptp.status,
-                ptp.cantidad,
-                ptp.precio_unitario,
-                pp.precio AS precio_base
-            FROM plan_tratamiento_procedimientos ptp
-            INNER JOIN catalogo_procedimientos cp
-                ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
-            LEFT JOIN precios_procedimientos pp
-                ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
-            WHERE ptp.id_plan = ?
-            `,
+        SELECT 
+            ptp.id_plan,
+            ptp.id_catalogo_procedimiento,
+            cp.nombre,
+            cp.descripcion,
+            ptp.status,
+            ptp.cantidad,
+            ptp.precio_unitario,
+            pp.precio AS precio_base
+        FROM plan_tratamiento_procedimientos ptp
+        INNER JOIN catalogo_procedimientos cp
+            ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
+        LEFT JOIN precios_procedimientos pp
+            ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
+        WHERE ptp.id_plan = ?
+        `,
             [id_plan]
         );
 
         plan.procedimientos = procRows;
+
+        // Pagos
+        const [pagosRows] = await db.execute(
+            `SELECT IFNULL(SUM(monto), 0) AS total_pagado FROM pagos WHERE id_plan = ?`,
+            [id_plan]
+        );
+
+        plan.total_pagado = pagosRows[0].total_pagado;
 
         return plan;
     },
@@ -101,11 +110,11 @@ const Tratamiento = {
 
         const [plans] = await db.execute(
             `
-            SELECT *
-            FROM plan_tratamiento
-            WHERE id_paciente = ?
-            ORDER BY fecha_inicio DESC
-            `,
+        SELECT *
+        FROM plan_tratamiento
+        WHERE id_paciente = ?
+        ORDER BY fecha_inicio DESC
+        `,
             [id_paciente]
         );
 
@@ -115,28 +124,37 @@ const Tratamiento = {
 
         const [procedimientos] = await db.query(
             `
-            SELECT 
-                ptp.id_plan,
-                ptp.id_catalogo_procedimiento,
-                cp.nombre,
-                cp.descripcion,
-                ptp.status,
-                ptp.cantidad,
-                ptp.precio_unitario,
-                pp.precio AS precio_base
-            FROM plan_tratamiento_procedimientos ptp
-            INNER JOIN catalogo_procedimientos cp
-                ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
-            LEFT JOIN precios_procedimientos pp
-                ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
-            WHERE ptp.id_plan IN (?)
-            `,
+        SELECT 
+            ptp.id_plan,
+            ptp.id_catalogo_procedimiento,
+            cp.nombre,
+            cp.descripcion,
+            ptp.status,
+            ptp.cantidad,
+            ptp.precio_unitario,
+            pp.precio AS precio_base
+        FROM plan_tratamiento_procedimientos ptp
+        INNER JOIN catalogo_procedimientos cp
+            ON ptp.id_catalogo_procedimiento = cp.id_catalogo_procedimiento
+        LEFT JOIN precios_procedimientos pp
+            ON cp.id_catalogo_procedimiento = pp.id_catalogo_procedimiento
+        WHERE ptp.id_plan IN (?)
+        `,
+            [ids]
+        );
+
+        const [pagos] = await db.query(
+            `SELECT id_plan, IFNULL(SUM(monto), 0) AS total_pagado
+         FROM pagos
+         WHERE id_plan IN (?)
+         GROUP BY id_plan`,
             [ids]
         );
 
         return plans.map(plan => ({
             ...plan,
-            procedimientos: procedimientos.filter(p => p.id_plan === plan.id_plan)
+            procedimientos: procedimientos.filter(p => p.id_plan === plan.id_plan),
+            total_pagado: pagos.find(p => p.id_plan === plan.id_plan)?.total_pagado || 0
         }));
     },
 

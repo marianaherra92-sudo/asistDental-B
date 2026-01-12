@@ -10,6 +10,7 @@ const PlanesPagoModel = {
         pt.fecha_inicio,
         pt.costo_ajustado,
         pt.estado,
+        pt.plan_pago,
         CONCAT(
           p.nombre, ' ',
           p.apellido_paterno, ' ',

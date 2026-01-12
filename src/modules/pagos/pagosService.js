@@ -24,6 +24,7 @@ const PagosService = {
             id_cuota,
             id_paciente,
             id_plan,
+            id_clinica,
             monto,
             metodo_pago,
             fecha_pago,
@@ -44,6 +45,7 @@ const PagosService = {
                 id_cuota,
                 id_paciente,
                 id_plan,
+                id_clinica,
                 monto,
                 metodo_pago,
                 fecha_pago,
@@ -80,8 +82,30 @@ const PagosService = {
         const affectedRows = await PagosModel.delete(id);
         if (!affectedRows) throw new Error('Pago no encontrado');
         return true;
-    }
+    },
+    getPagosPorPaciente: async (id_paciente) => {
+        const pendientesCuotas = await PagosModel.getCuotasPendientes(id_paciente);
+        const pendientesUnicos = await PagosModel.getPagosUnicosPendientes(id_paciente);
+        const pagados = await PagosModel.getPagosRegistrados(id_paciente);
 
+        return {
+            pendientes: [...pendientesCuotas, ...pendientesUnicos],
+            pagados
+        };
+    },
+    getResumenPagosClinica: async (id_clinica) => {
+        const pagados = await PagosModel.getPagosRegistradosPorClinica(id_clinica);
+        const cuotasPendientes = await PagosModel.getCuotasPendientesPorClinica(id_clinica);
+        const pagosUnicosPendientes = await PagosModel.getPagosUnicosPendientesPorClinica(id_clinica);
+
+        return {
+            pagados,
+            pendientes: [
+                ...cuotasPendientes,
+                ...pagosUnicosPendientes
+            ]
+        };
+    }
 };
 
 module.exports = PagosService;
