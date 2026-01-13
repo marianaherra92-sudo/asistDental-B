@@ -13,6 +13,7 @@ const PlanesPagoController = {
             acc[row.id_plan] = {
               id: row.id_plan,
               fecha: row.fecha_inicio,
+              id_paciente: row.id_paciente,
               paciente: row.paciente,
               telefono: row.telefono,
               email: row.email,

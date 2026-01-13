@@ -11,6 +11,7 @@ const PlanesPagoModel = {
         pt.costo_ajustado,
         pt.estado,
         pt.plan_pago,
+        pt.id_paciente,
         CONCAT(
           p.nombre, ' ',
           p.apellido_paterno, ' ',
