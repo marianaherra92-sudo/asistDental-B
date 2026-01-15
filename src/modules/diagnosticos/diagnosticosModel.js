@@ -4,7 +4,7 @@ const CatalogoDiagnosticosModel = {
 
     findAll: async () => {
         const [rows] = await db.query(`
-      SELECT * FROM catalogo_diagnosticos
+      SELECT * FROM catalogo_diagnosticos 
     `);
         return rows;
     },

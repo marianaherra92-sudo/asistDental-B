@@ -20,6 +20,8 @@ const odontogramaRoutes = require('./modules/odontogramas/odontogramaRoutes');
 const diagnosticosRoutes = require('./modules/diagnosticos/diagnosticosRoutes');
 const pagosRoutes = require('./modules/pagos/pagosRoutes');
 const cuotasRoutes = require('./modules/cuotas/cuotasRoutes');
+const productosRoutes = require('./modules/inventario/routes/productosRoutes');
+const lotesRoutes = require('./modules/inventario/routes/lotesRoutes');
 const app = express();
 
 app.use(helmet());
@@ -43,6 +45,8 @@ app.use('/cuotas', cuotasRoutes);
 app.use('/planes-pago', planesPagoRoutes);
 app.use('/odontogramas', odontogramaRoutes);
 app.use('/diagnosticos', diagnosticosRoutes);
+app.use('/productos', productosRoutes);
+app.use('/lotes', lotesRoutes);
 app.use(errorHandler);
 
 

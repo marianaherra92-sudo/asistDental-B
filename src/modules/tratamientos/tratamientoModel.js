@@ -75,6 +75,7 @@ const Tratamiento = {
         const [procRows] = await db.execute(
             `
         SELECT 
+            ptp.id_procedimiento, 
             ptp.id_plan,
             ptp.id_catalogo_procedimiento,
             cp.nombre,
@@ -125,6 +126,7 @@ const Tratamiento = {
         const [procedimientos] = await db.query(
             `
         SELECT 
+            ptp.id_procedimiento, 
             ptp.id_plan,
             ptp.id_catalogo_procedimiento,
             cp.nombre,

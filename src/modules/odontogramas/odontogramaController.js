@@ -1,8 +1,10 @@
 const Odontograma = require("./models/odontogramaModel");
 const Diagnostico = require("./models/oDiagnosticosModel");
-const Procedimiento = require("./models/oProcedimientosModel");
 const VersionService = require("./services/oVersionServices");
 const OdontogramaService = require("./services/odontogramaService");
+const ProcedimientoService = require("./services/oProcedimientosServices");
+const MaterialUsado = require("./models/materialUsadoModel");
+const Procedimiento = require("./models/oProcedimientosModel");
 
 const create = async (req, res) => {
     const id = await OdontogramaService.createNewOdontograma(req.body);
@@ -20,6 +22,12 @@ const getFull = async (req, res) => {
     const odontograma = await Odontograma.findById(id);
     const diagnosticos = await Diagnostico.findByOdontograma(id);
     const procedimientos = await Procedimiento.findByOdontograma(id);
+
+    for (const proc of procedimientos) {
+        proc.materiales = await MaterialUsado.findByProcedimiento(
+            proc.id_odontograma_procedimiento
+        );
+    }
 
     res.json({ odontograma, diagnosticos, procedimientos });
 };
@@ -48,11 +56,27 @@ const deleteDiagnostico = async (req, res) => {
 };
 
 const addProcedimiento = async (req, res) => {
-    await Procedimiento.add({
-        ...req.body,
-        id_odontograma: req.params.id
-    });
-    res.status(201).json({ message: "Procedimiento agregado" });
+    try {
+        const procedimientoId =
+            await ProcedimientoService.crearProcedimientoConMateriales({
+                procedimiento: {
+                    ...req.body.procedimiento,
+                    id_odontograma: req.params.id
+                },
+                materiales: req.body.materiales || []
+            });
+
+        res.status(201).json({
+            message: "Procedimiento agregado",
+            id_procedimiento: procedimientoId
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error al registrar procedimiento"
+        });
+    }
 };
 
 const createVersion = async (req, res) => {
