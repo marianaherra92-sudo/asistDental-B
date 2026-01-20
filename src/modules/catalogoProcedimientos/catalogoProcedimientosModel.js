@@ -8,13 +8,14 @@ const CatalogoProcedimientos = {
             await conn.beginTransaction();
 
             const [result] = await conn.execute(
-                `INSERT INTO catalogo_procedimientos (id_clinica, nombre, descripcion, activo)
-                 VALUES (?, ?, ?, ?)`,
+                `INSERT INTO catalogo_procedimientos (id_clinica, nombre, descripcion, activo, color)
+                 VALUES (?, ?, ?, ?, ?)`,
                 [
                     data.id_clinica,
                     data.nombre,
                     data.descripcion ?? null,
-                    data.activo ?? 1
+                    data.activo ?? 1,
+                    data.color ?? '#00676E',
                 ]
             );
 
@@ -80,13 +81,14 @@ const CatalogoProcedimientos = {
 
             const [result] = await conn.execute(
                 `UPDATE catalogo_procedimientos
-                 SET id_clinica = ?, nombre = ?, descripcion = ?, activo = ?
+                 SET id_clinica = ?, nombre = ?, descripcion = ?, activo = ?,  color = ?
                  WHERE id_catalogo_procedimiento = ?`,
                 [
                     data.id_clinica,
                     data.nombre,
                     data.descripcion ?? null,
                     data.activo ?? 1,
+                    data.color ?? '#00676E',
                     id
                 ]
             );
