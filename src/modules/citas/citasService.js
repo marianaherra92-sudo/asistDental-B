@@ -27,10 +27,11 @@ const CitasService = {
                     fecha_cita,
                     hora_inicio,
                     hora_fin,
+                    id_procedimiento,
                     notas,
                     estado,
                     creado_por
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente', ?)`,
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente', ?)`,
                 [
                     data.id_clinica,
                     data.id_paciente,
@@ -38,6 +39,7 @@ const CitasService = {
                     data.fecha_cita,
                     data.hora_inicio,
                     data.hora_fin,
+                    data.id_procedimiento,
                     data.notas,
                     data.creado_por,
                 ]
