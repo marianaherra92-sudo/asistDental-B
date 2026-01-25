@@ -10,10 +10,11 @@ const CitasModel = {
                 fecha_cita,
                 hora_inicio,
                 hora_fin,
+                id_procedimiento,
                 notas,
                 estado,
                 creado_por
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente', ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente', ?)`,
             [
                 data.id_clinica,
                 data.id_paciente,
@@ -21,6 +22,7 @@ const CitasModel = {
                 data.fecha_cita,
                 data.hora_inicio,
                 data.hora_fin,
+                data.id_procedimiento,
                 data.notas,
                 data.creado_por
             ]
@@ -29,46 +31,61 @@ const CitasModel = {
 
     getByDate(id_clinica, fecha) {
         return db.execute(
-            `SELECT c.*, 
-              p.nombre AS paciente,
-              d.nombre AS dentista
-           FROM citas c
-           JOIN pacientes p ON p.id_paciente = c.id_paciente
-           JOIN dentistas d ON d.id_dentista = c.id_dentista
-           WHERE c.id_clinica = ?
-             AND c.fecha_cita = ?
-           ORDER BY c.hora_inicio`,
+            `SELECT c.*,
+                p.nombre AS paciente,
+                d.nombre AS dentista,
+                cp.id_catalogo_procedimiento AS procedimiento_id,
+                cp.nombre AS procedimiento_nombre,
+                cp.color AS procedimiento_color
+            FROM citas c
+            JOIN pacientes p ON p.id_paciente = c.id_paciente
+            JOIN dentistas d ON d.id_dentista = c.id_dentista
+            LEFT JOIN catalogo_procedimientos cp
+                ON cp.id_catalogo_procedimiento = c.id_procedimiento
+            WHERE c.id_clinica = ?
+                AND c.fecha_cita = ?
+            ORDER BY c.hora_inicio`,
             [id_clinica, fecha]
         );
     },
 
     getByWeek(id_clinica, start_date, end_date) {
         return db.execute(
-            `SELECT c.*, 
-              p.nombre AS paciente,
-              d.nombre AS dentista
-           FROM citas c
-           JOIN pacientes p ON p.id_paciente = c.id_paciente
-           JOIN dentistas d ON d.id_dentista = c.id_dentista
-           WHERE c.id_clinica = ?
-             AND c.fecha_cita BETWEEN ? AND ?
-           ORDER BY c.fecha_cita, c.hora_inicio`,
+            `SELECT c.*,
+                p.nombre AS paciente,
+                d.nombre AS dentista,
+                cp.id_catalogo_procedimiento AS procedimiento_id,
+                cp.nombre AS procedimiento_nombre,
+                cp.color AS procedimiento_color
+            FROM citas c
+            JOIN pacientes p ON p.id_paciente = c.id_paciente
+            JOIN dentistas d ON d.id_dentista = c.id_dentista
+            LEFT JOIN catalogo_procedimientos cp
+                 ON cp.id_catalogo_procedimiento = c.id_procedimiento
+            WHERE c.id_clinica = ?
+                AND c.fecha_cita BETWEEN ? AND ?
+            ORDER BY c.fecha_cita, c.hora_inicio;`,
             [id_clinica, start_date, end_date]
         );
     },
 
     getByMonth(id_clinica, year, month) {
         return db.execute(
-            `SELECT c.*, 
-              p.nombre AS paciente,
-              d.nombre AS dentista
-           FROM citas c
-           JOIN pacientes p ON p.id_paciente = c.id_paciente
-           JOIN dentistas d ON d.id_dentista = c.id_dentista
-           WHERE c.id_clinica = ?
-             AND YEAR(c.fecha_cita) = ?
-             AND MONTH(c.fecha_cita) = ?
-           ORDER BY c.fecha_cita, c.hora_inicio`,
+            `SELECT c.*,
+                p.nombre AS paciente,
+                d.nombre AS dentista,
+                cp.id_catalogo_procedimiento AS procedimiento_id,
+                cp.nombre AS procedimiento_nombre,
+                cp.color AS procedimiento_color
+            FROM citas c
+            JOIN pacientes p ON p.id_paciente = c.id_paciente
+            JOIN dentistas d ON d.id_dentista = c.id_dentista
+            LEFT JOIN catalogo_procedimientos cp
+                ON cp.id_catalogo_procedimiento = c.id_procedimiento
+            WHERE c.id_clinica = ?
+                AND YEAR(c.fecha_cita) = ?
+                AND MONTH(c.fecha_cita) = ?
+            ORDER BY c.fecha_cita, c.hora_inicio;`,
             [id_clinica, year, month]
         );
     },
