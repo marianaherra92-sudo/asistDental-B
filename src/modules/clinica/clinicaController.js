@@ -1,5 +1,7 @@
 const db = require('../../config/db');
 
+const Clinica = require('./clinicaModel');
+
 const ClinicaController = {
   async getById(req, res) {
     const { id } = req.params;
@@ -15,8 +17,10 @@ const ClinicaController = {
           telefono,
           correo_contacto AS correo,
           plan_saas AS plan,
-          logo_url AS logo,
-          color_principal
+          logo_url,
+          color_principal,
+          color_secundario,
+          color_extra
         FROM clinicas
         WHERE id_clinica = ?
         `,
@@ -29,8 +33,19 @@ const ClinicaController = {
 
       res.json(rows[0]);
     } catch (err) {
-      console.error(err);
       res.status(500).json({ message: 'Error en el servidor' });
+    }
+  },
+
+  async update(req, res) {
+    const { id } = req.params;
+
+    try {
+      await Clinica.update(id, req.body);
+      res.json({ message: 'Clínica actualizada correctamente' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error al actualizar la clínica' });
     }
   }
 };
