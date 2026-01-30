@@ -20,9 +20,10 @@ const odontogramaRoutes = require('./modules/odontogramas/odontogramaRoutes');
 const diagnosticosRoutes = require('./modules/diagnosticos/diagnosticosRoutes');
 const pagosRoutes = require('./modules/pagos/pagosRoutes');
 const cuotasRoutes = require('./modules/cuotas/cuotasRoutes');
-const productosRoutes = require('./modules/inventario/routes/productosRoutes');
-const lotesRoutes = require('./modules/inventario/routes/lotesRoutes');
+const productosRoutes = require('./modules/inventario/productos/productosRoutes');
+const lotesRoutes = require('./modules/inventario/lotes/lotesRoutes');
 const ConfiguracionClinica = require('./modules/clinica/configuracion_clinica/configuracionClinicaRoutes');
+const movimientosProductosRoutes = require('./modules/inventario/movimientos_productos/mpRoutes');
 const app = express();
 
 app.use(helmet());
@@ -49,6 +50,7 @@ app.use('/diagnosticos', diagnosticosRoutes);
 app.use('/productos', productosRoutes);
 app.use('/lotes', lotesRoutes);
 app.use('/configuracionClinica', ConfiguracionClinica);
+app.use('/movimientos-productos', movimientosProductosRoutes);
 app.use(errorHandler);
 
 

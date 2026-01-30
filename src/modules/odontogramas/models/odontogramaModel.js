@@ -46,13 +46,126 @@ const Odontograma = {
     },
 
     async archive(id_odontograma) {
-        await db.query(
+        const [result] = await db.query(
             `UPDATE odontogramas
-       SET estado = 'Archivado'
-       WHERE id_odontograma = ?`,
+         SET estado = 'Archivado'
+         WHERE id_odontograma = ?`,
             [id_odontograma]
         );
+
+        return result.affectedRows;
+    },
+
+    async archiveAndCreateNew(id_odontograma) {
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            // 1. Obtener odontograma actual
+            const [[current]] = await connection.query(
+                `SELECT id_paciente, id_clinica, version
+             FROM odontogramas
+             WHERE id_odontograma = ?`,
+                [id_odontograma]
+            );
+
+            if (!current) {
+                await connection.rollback();
+                return null;
+            }
+
+            // 2. Archivar
+            await connection.query(
+                `UPDATE odontogramas
+             SET estado = 'Archivado'
+             WHERE id_odontograma = ?`,
+                [id_odontograma]
+            );
+
+            // 3. Crear nuevo odontograma
+            const [result] = await connection.query(
+                `INSERT INTO odontogramas (id_clinica, id_paciente, version, estado)
+             VALUES (?, ?, ?, 'Activo')`,
+                [
+                    current.id_clinica,
+                    current.id_paciente,
+                    current.version + 1
+                ]
+            );
+
+            await connection.commit();
+
+            return result.insertId;
+
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    },
+
+    async archiveAndSnapshot(id_odontograma, snapshot, creado_por, nota_cierre) {
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            const [[current]] = await connection.query(
+                `SELECT id_paciente, id_clinica, version
+             FROM odontogramas
+             WHERE id_odontograma = ?`,
+                [id_odontograma]
+            );
+
+            if (!current) {
+                await connection.rollback();
+                return null;
+            }
+
+            await connection.query(
+                `UPDATE odontogramas
+                 SET estado = 'Archivado',
+                     nota_cierre = ?
+                 WHERE id_odontograma = ?`,
+                [nota_cierre, id_odontograma]
+            );
+
+            await connection.query(
+                `INSERT INTO odontograma_versiones
+             (id_odontograma, numero_version, snapshot, creado_por)
+             VALUES (?, ?, ?, ?)`,
+                [
+                    id_odontograma,
+                    current.version,
+                    JSON.stringify(snapshot),
+                    creado_por
+                ]
+            );
+
+            const [result] = await connection.query(
+                `INSERT INTO odontogramas (id_clinica, id_paciente, version, estado)
+             VALUES (?, ?, ?, 'Activo')`,
+                [
+                    current.id_clinica,
+                    current.id_paciente,
+                    current.version + 1
+                ]
+            );
+
+            await connection.commit();
+
+            return result.insertId;
+
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
     }
+
 };
 
 module.exports = Odontograma;

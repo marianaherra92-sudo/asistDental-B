@@ -38,8 +38,52 @@ const update = async (req, res) => {
 };
 
 const archive = async (req, res) => {
-    await Odontograma.archive(req.params.id);
-    res.json({ message: "Odontograma archivado" });
+    try {
+        const id = req.params.id;
+        const { nota_cierre } = req.body;
+
+        if (!nota_cierre || !nota_cierre.trim()) {
+            return res.status(400).json({
+                message: "La nota de cierre es obligatoria"
+            });
+        }
+
+        // Obtener snapshot
+        const odontograma = await Odontograma.findById(id);
+        const diagnosticos = await Diagnostico.findByOdontograma(id);
+        const procedimientos = await Procedimiento.findByOdontograma(id);
+
+        for (const proc of procedimientos) {
+            proc.materiales = await MaterialUsado.findByProcedimiento(
+                proc.id_odontograma_procedimiento
+            );
+        }
+
+        // Agregar nota al snapshot también
+        odontograma.nota_cierre = nota_cierre;
+
+        const snapshot = { odontograma, diagnosticos, procedimientos };
+
+        const newId = await Odontograma.archiveAndSnapshot(
+            id,
+            snapshot,
+            req.user?.id,
+            nota_cierre
+        );
+
+        if (!newId) {
+            return res.status(404).json({ message: "Odontograma no encontrado" });
+        }
+
+        res.json({
+            message: "Odontograma cerrado correctamente",
+            new_odontograma_id: newId
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al cerrar odontograma" });
+    }
 };
 
 const addDiagnostico = async (req, res) => {

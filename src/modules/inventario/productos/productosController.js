@@ -1,4 +1,4 @@
-const Productos = require("../models/productosModel");
+const Productos = require("./productosModel");
 
 const getAllByClinica = async (req, res) => {
     const { id_clinica } = req.params;
@@ -26,10 +26,33 @@ const remove = async (req, res) => {
     res.json({ message: "Producto eliminado" });
 };
 
+const getLowStock = async (req, res) => {
+    const { id_clinica } = req.params;
+    const { limite } = req.query;
+    const data = await Productos.getLowStock(id_clinica, limite);
+    res.json(data);
+};
+
+const getExpiring = async (req, res) => {
+    const { id_clinica } = req.params;
+    const { dias } = req.query;
+    const data = await Productos.getExpiring(id_clinica, dias);
+    res.json(data);
+};
+
+const getDashboardStats = async (req, res) => {
+    const { id_clinica } = req.params;
+    const data = await Productos.getDashboardStats(id_clinica);
+    res.json(data);
+};
+
 module.exports = {
     getAllByClinica,
     getById,
     create,
     update,
-    remove
+    remove,
+    getLowStock,
+    getExpiring,
+    getDashboardStats
 };

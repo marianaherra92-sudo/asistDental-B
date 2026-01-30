@@ -1,12 +1,21 @@
 const Paciente = require('./pacienteModel');
+const Odontograma = require('../odontogramas/models/odontogramaModel');
 
 exports.createPaciente = async (req, res) => {
     try {
         const nuevoPacienteId = await Paciente.create(req.body);
+        const id_clinica = req.body.id_clinica;
+
+        const nuevoOdontogramaId = await Odontograma.create({
+            id_clinica,
+            id_paciente: nuevoPacienteId
+        });
 
         res.status(201).json({
             message: 'Paciente creado correctamente',
-            id_paciente: nuevoPacienteId
+            id_paciente: nuevoPacienteId,
+            id_odontograma: nuevoOdontogramaId
+
         });
     } catch (error) {
         console.error('Error al crear paciente:', error);

@@ -6,7 +6,7 @@ router.post("/", controller.create);
 router.get("/paciente/:idPaciente", controller.listByPaciente);
 router.get("/:id", controller.getFull);
 router.put("/:id", controller.update);
-router.delete("/:id", controller.archive);
+router.put("/:id/archive", controller.archive);
 
 router.post("/:id/diagnosticos", controller.addDiagnostico);
 router.delete("/diagnosticos/:id", controller.deleteDiagnostico);

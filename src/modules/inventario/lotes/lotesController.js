@@ -1,7 +1,14 @@
-const LotesProductos = require('../models/lotesModel');
+const LotesProductos = require('./lotesModel');
+const Productos = require("../productos/productosModel");
 
 const getByProducto = async (req, res) => {
     const data = await LotesProductos.getByProducto(req.params.id_producto);
+    res.json(data);
+};
+
+const getAllByClinica = async (req, res) => {
+    const { id_clinica } = req.params;
+    const data = await LotesProductos.getByClinica(id_clinica);
     res.json(data);
 };
 
@@ -20,8 +27,10 @@ const remove = async (req, res) => {
     res.json({ message: "Lote eliminado" });
 };
 
+
 module.exports = {
     getByProducto,
+    getAllByClinica,
     create,
     update,
     remove
