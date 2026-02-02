@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const catalogoController = require('./catalogoProcedimientosController');
+const authMiddleware = require("../../middlewares/authMiddleware");
+const checkPermiso = require("../../middlewares/checkPermiso");
 
-router.get('/', catalogoController.getCatalogos);
-router.get('/:id', catalogoController.getCatalogo);
-router.get('/clinica/:id_clinica', catalogoController.getCatalogoByClinica);
-router.post('/', catalogoController.createCatalogo);
-router.put('/:id', catalogoController.updateCatalogo);
-router.delete('/:id', catalogoController.deleteCatalogo);
+router.get('/',authMiddleware,checkPermiso('permisos_clinica'), catalogoController.getCatalogos);
+router.get('/:id',authMiddleware,checkPermiso('permisos_clinica'), catalogoController.getCatalogo);
+router.get('/clinica/:id_clinica', authMiddleware,checkPermiso('permisos_clinica'),catalogoController.getCatalogoByClinica);
+router.post('/',authMiddleware,checkPermiso('permisos_clinica'), catalogoController.createCatalogo);
+router.put('/:id',authMiddleware,checkPermiso('permisos_clinica'), catalogoController.updateCatalogo);
+router.delete('/:id',authMiddleware,checkPermiso('permisos_clinica'), catalogoController.deleteCatalogo);
 
 module.exports = router;
