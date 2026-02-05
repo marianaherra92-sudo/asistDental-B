@@ -8,5 +8,6 @@ router.get('/:id_clinica', authMiddleware,checkPermiso('permisos_clinica'), Dent
 router.post('/', authMiddleware,checkPermiso('permisos_clinica'), DentistaController.create);
 router.put('/:id', authMiddleware,checkPermiso('permisos_clinica'), DentistaController.update);
 router.patch('/:id/status', authMiddleware,checkPermiso('permisos_clinica'), DentistaController.inactivarDentista);
+router.post('/con-usuario', authMiddleware, checkPermiso('permisos_clinica'), DentistaController.createConUsuario);
 
 module.exports = router;

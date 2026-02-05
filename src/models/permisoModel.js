@@ -5,6 +5,7 @@ const Permiso = {
       const [rows] = await db.execute(
         `SELECT * FROM permisos WHERE nombre != 'gestionar_saas'`
       );
+      console.log("Roles desde DB:", rows);
       return rows;
     },
 
