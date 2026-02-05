@@ -1,6 +1,7 @@
 const db = require('../../config/db');
 
 const Dentista = require('./dentistaModel'); 
+const { createDentistaConUsuario } = require('./dentistasConUsuarioService');
 
 const DentistaController = {
   async getAllByClinica(req, res) {
@@ -91,6 +92,22 @@ const DentistaController = {
     res.status(500).json({ message: 'Error al cambiar estado del dentista' });
   }
 },
+ async createConUsuario(req, res) {
+    try {
+      const { dentistaData, usuarioData, id_clinica } = req.body;
+
+      if (!dentistaData || !usuarioData || !id_clinica) {
+        return res.status(400).json({ mensaje: 'Faltan datos para crear dentista y usuario' });
+      }
+
+      const result = await createDentistaConUsuario({ dentistaData, usuarioData, id_clinica });
+
+      res.status(201).json({ mensaje: 'Dentista y usuario creados', data: result });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ mensaje: 'Error al crear dentista y usuario' });
+    }
+  }
 };
 
 module.exports = DentistaController;
