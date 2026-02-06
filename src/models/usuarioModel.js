@@ -16,18 +16,38 @@ const Usuario = {
     return result.insertId;
   },
 
-    async findByUsuarioWithRol(usuario) {
-        const [rows] = await db.execute(
-            `
+  async findByUsuarioWithRol(usuario) {
+    const [rows] = await db.execute(
+      `
     SELECT u.*, r.nombre_rol
     FROM usuarios_login u
     LEFT JOIN roles r ON r.id_rol = u.id_rol
     WHERE u.usuario = ? AND u.activo = TRUE
     `,
-            [usuario]
-        );
-        return rows[0];
-    }
+      [usuario]
+    );
+    return rows[0];
+  },
+
+  async findByClinica(id_clinica) {
+    const [rows] = await db.execute(
+      `
+    SELECT 
+      u.id_usuario,
+      u.usuario,
+      u.activo,
+      u.id_rol,
+      r.nombre_rol
+    FROM usuarios_login u
+    LEFT JOIN roles r ON r.id_rol = u.id_rol
+    WHERE u.id_clinica = ?
+    ORDER BY u.id_usuario DESC
+    `,
+      [id_clinica]
+    );
+    return rows;
+  }
+
 };
 
 module.exports = Usuario;

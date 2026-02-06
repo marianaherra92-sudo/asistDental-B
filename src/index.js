@@ -25,6 +25,7 @@ const lotesRoutes = require('./modules/inventario/lotes/lotesRoutes');
 const ConfiguracionClinica = require('./modules/clinica/configuracion_clinica/configuracionClinicaRoutes');
 const movimientosProductosRoutes = require('./modules/inventario/movimientos_productos/mpRoutes');
 const rolesRoutes = require('./routes/rolesRoutes'); 
+const usuariosRoutes = require('./routes/usuariosRoutes');
 const app = express();
 
 app.use(helmet());
@@ -53,6 +54,7 @@ app.use('/lotes', lotesRoutes);
 app.use('/configuracionClinica', ConfiguracionClinica);
 app.use('/movimientos-productos', movimientosProductosRoutes);
 app.use('/roles', rolesRoutes);
+app.use('/usuarios', usuariosRoutes);
 app.use(errorHandler);
 
 
