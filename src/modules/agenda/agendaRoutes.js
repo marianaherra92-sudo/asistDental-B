@@ -4,6 +4,6 @@ const authMiddleware = require('../../middlewares/authMiddleware');
 const checkPermiso = require('../../middlewares/checkPermiso');
 
 router.post('/', authMiddleware,checkPermiso('permisos_pacientes'), ctrl.create);
-router.get('/:id_clinica', authMiddleware,checkPermiso('permisos_pacientes'), ctrl.list);
+router.get('/:id_clinica', authMiddleware, ctrl.list);
 
 module.exports = router;

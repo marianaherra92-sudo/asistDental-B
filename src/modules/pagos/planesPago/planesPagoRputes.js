@@ -4,6 +4,6 @@ const controller = require("./planesPagoController");
 const authMiddleware = require("../../../middlewares/authMiddleware");
 const checkPermiso = require("../../../middlewares/checkPermiso");
 
-router.get("/clinica/:id",authMiddleware,checkPermiso('permisos_clinica'), controller.listarPorClinica);
+router.get("/clinica/:id",authMiddleware, controller.listarPorClinica);
 
 module.exports = router;

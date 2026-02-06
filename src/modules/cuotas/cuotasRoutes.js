@@ -4,10 +4,10 @@ const CuotasController = require('./cuotasController');
 const authMiddleware = require("../../middlewares/authMiddleware");
 const checkPermiso = require("../../middlewares/checkPermiso");
 
-router.get('/', authMiddleware,checkPermiso('permisos_clinica'),CuotasController.getCuotas);
-router.get('/:id_cuota',authMiddleware,checkPermiso('permisos_clinica'), CuotasController.getCuotaById);
-router.get('/plan/:id_plan',authMiddleware,checkPermiso('permisos_clinica'), CuotasController.getCuotasByPlan);
-router.get('/paciente/:id_paciente',authMiddleware,checkPermiso('permisos_clinica'), CuotasController.getCuotasByPaciente);
+router.get('/', authMiddleware, CuotasController.getCuotas);
+router.get('/:id_cuota',authMiddleware, CuotasController.getCuotaById);
+router.get('/plan/:id_plan',authMiddleware, CuotasController.getCuotasByPlan);
+router.get('/paciente/:id_paciente',authMiddleware,CuotasController.getCuotasByPaciente);
 router.post('/', authMiddleware,checkPermiso('permisos_clinica'),CuotasController.createCuota);
 router.post('/bulk', authMiddleware,checkPermiso('permisos_clinica'),CuotasController.createManyCuotas);
 router.put('/:id_cuota', authMiddleware,checkPermiso('permisos_clinica'),CuotasController.updateCuota);

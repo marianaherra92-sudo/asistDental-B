@@ -4,8 +4,7 @@ const Rol = {
   async getAllForClinica(id_clinica) {
     const [rows] = await db.execute(
       `SELECT id_rol, nombre_rol, descripcion 
-       FROM roles 
-       WHERE id_clinica = ?`,
+       FROM roles `,
       [id_clinica]
     );
     console.log("Roles desde DB:", rows);

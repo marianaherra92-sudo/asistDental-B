@@ -5,8 +5,8 @@ const checkPermiso = require("../../middlewares/checkPermiso");
 const router = express.Router();
 
 router.post('/', authMiddleware, checkPermiso('permisos_tratamientos'), tratamientoController.createTratamiento);
-router.get('/:id_plan', authMiddleware,checkPermiso('permisos_tratamientos'), tratamientoController.getTratamiento);
-router.get('/paciente/:id_paciente', authMiddleware,checkPermiso('permisos_tratamientos'), tratamientoController.getTratamientosPaciente);
+router.get('/:id_plan', authMiddleware, tratamientoController.getTratamiento);
+router.get('/paciente/:id_paciente', authMiddleware, tratamientoController.getTratamientosPaciente);
 router.put('/:id_plan', authMiddleware,checkPermiso('permisos_tratamientos'), tratamientoController.updateTratamiento);
 router.delete('/:id_plan', authMiddleware,checkPermiso('permisos_tratamientos'), tratamientoController.deleteTratamiento);
 

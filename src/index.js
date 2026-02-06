@@ -26,6 +26,7 @@ const ConfiguracionClinica = require('./modules/clinica/configuracion_clinica/co
 const movimientosProductosRoutes = require('./modules/inventario/movimientos_productos/mpRoutes');
 const rolesRoutes = require('./routes/rolesRoutes'); 
 const usuariosRoutes = require('./routes/usuariosRoutes');
+const archivosRoutes = require("./modules/archivos/archivosRoutes");
 const app = express();
 
 app.use(helmet());
@@ -55,6 +56,8 @@ app.use('/configuracionClinica', ConfiguracionClinica);
 app.use('/movimientos-productos', movimientosProductosRoutes);
 app.use('/roles', rolesRoutes);
 app.use('/usuarios', usuariosRoutes);
+app.use("/uploads", express.static("/var/www/uploads"));
+app.use("/api/archivos", archivosRoutes);
 app.use(errorHandler);
 
 

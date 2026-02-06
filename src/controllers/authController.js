@@ -125,6 +125,7 @@ exports.login = async (req, res) => {
           id_clinica: user.id_clinica,
           id_dentista: user.id_dentista,
           id_rol: user.id_rol,
+          nombre_rol: user.nombre_rol,
           permisos
         },
         JWT_SECRET,

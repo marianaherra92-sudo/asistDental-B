@@ -8,13 +8,16 @@ function authMiddleware(req, res, next) {
   if (!token) {
     return res.status(401).json({ mensaje: 'Token requerido' });
   }
+  console.log("AUTH HEADER:", req.headers.authorization);
+
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ mensaje: 'Token inválido' });
     }
+    console.log("TOKEN DECODIFICADO BACKEND:", decoded);
 
-    // 👇 IMPORTANTE
+
     req.user = decoded;
     next();
   });
