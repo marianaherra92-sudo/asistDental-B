@@ -7,5 +7,10 @@ router.post( '/', authMiddleware, usuariosController.createUsuario);
 
 router.get('/', authMiddleware, usuariosController.getUsuariosByClinica);
 
+router.put('/:id', authMiddleware, usuariosController.updateUsuario);
+
+router.patch('/:id/estado', authMiddleware, usuariosController.activarUsuarios
+);
+
 
 module.exports = router;

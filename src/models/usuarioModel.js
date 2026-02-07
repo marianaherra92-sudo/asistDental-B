@@ -46,7 +46,25 @@ const Usuario = {
       [id_clinica]
     );
     return rows;
-  }
+  },
+
+  async update(id_usuario, data) {
+  const [result] = await db.execute(
+    `UPDATE usuarios_login
+     SET usuario = ?, id_rol = ?
+     WHERE id_usuario = ?`,
+    [data.usuario, data.id_rol, id_usuario]
+  );
+  return result.affectedRows;
+},
+
+  async activarUsuarios(id_usuario, activo) {
+  const [result] = await db.execute(
+    `UPDATE usuarios_login SET activo = ? WHERE id_usuario = ?`,
+    [activo, id_usuario]
+  );
+  return result.affectedRows;
+}
 
 };
 
