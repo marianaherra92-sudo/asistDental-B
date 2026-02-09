@@ -1,21 +1,17 @@
 const express = require("express");
 const { subirArchivo, listarArchivos } = require("./archivosController");
-const { uploadImage, uploadDocument } = require("../../middlewares/upload");
+const upload = require("../../middlewares/upload"); // 👈 nuevo multer
 
 const router = express.Router();
 
+// 📄 Subir cualquier archivo (PDF, imagen, etc)
 router.post(
-    "/imagen",
-    uploadImage.single("archivo"),
+    "/",
+    upload.single("archivo"),
     subirArchivo
 );
 
-router.post(
-    "/documento",
-    uploadDocument.single("archivo"),
-    subirArchivo
-);
-
-router.get('/listar', listarArchivos);
+// 📄 Listar archivos
+router.get("/listar", listarArchivos);
 
 module.exports = router;
