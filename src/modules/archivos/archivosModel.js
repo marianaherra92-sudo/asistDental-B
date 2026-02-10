@@ -1,22 +1,22 @@
 const db = require('../../config/db');
 
 const guardarArchivo = async ({
-    id_consulta,
-    id_paciente,
-    tipo,
-    url_archivo,
-    nombre_archivo,
-    descripcion,
-    }) => {
+                                  id_consulta,
+                                  id_paciente,
+                                  tipo,
+                                  ruta_archivo,
+                                  nombre_archivo,
+                                  descripcion,
+                              }) => {
     const [result] = await db.query(
         `INSERT INTO archivos_clinicas
-     (id_consulta, id_paciente, tipo, url_archivo, nombre_archivo, descripcion)
+     (id_consulta, id_paciente, tipo, ruta_archivo, nombre_archivo, descripcion)
      VALUES (?, ?, ?, ?, ?, ?)`,
         [
             id_consulta,
             id_paciente,
             tipo,
-            url_archivo,
+            ruta_archivo,
             nombre_archivo,
             descripcion,
         ]
@@ -24,6 +24,7 @@ const guardarArchivo = async ({
 
     return result.insertId;
 };
+
 
 const obtenerArchivos = async ({ id_consulta, id_paciente }) => {
     let query = 'SELECT * FROM archivos_clinicas WHERE 1=1';
