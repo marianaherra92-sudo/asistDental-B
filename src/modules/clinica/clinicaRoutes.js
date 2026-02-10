@@ -2,6 +2,7 @@ const express = require('express');
 const authController = require('../../controllers/authController');
 const ClinicaController = require('./clinicaController');
 const checkPermiso = require('../../middlewares/checkPermiso');
+const upload = require("../../middlewares/upload");
 const authMiddleware = require('../../middlewares/authMiddleware');
 const router = express.Router();
 
@@ -19,6 +20,13 @@ router.put(
     authMiddleware,
     checkPermiso('permisos_clinica'),
     ClinicaController.update
+);
+
+
+router.post(
+  "/:id/logo",
+  upload.single("logo"),
+  ClinicaController.uploadLogo
 );
 
 module.exports = router;

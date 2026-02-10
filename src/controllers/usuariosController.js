@@ -45,3 +45,40 @@ exports.getUsuariosByClinica = async (req, res) => {
   }
 };
 
+exports.updateUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { usuario, id_rol } = req.body;
+
+    if (!usuario || !id_rol) {
+      return res.status(400).json({ mensaje: 'Datos incompletos' });
+    }
+
+    await Usuario.update(id, { usuario, id_rol });
+
+    res.json({ mensaje: 'Usuario actualizado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al actualizar usuario' });
+  }
+};
+
+exports.activarUsuarios = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { activo } = req.body;
+
+    if (activo === undefined) {
+      return res.status(400).json({ mensaje: 'Estado inválido' });
+    }
+
+    await Usuario.activarUsuarios(id, activo);
+
+    res.json({ mensaje: 'Estado actualizado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al actualizar estado' });
+  }
+};
+
+
