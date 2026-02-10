@@ -10,34 +10,29 @@ const subirArchivo = async (req, res) => {
             return res.status(400).json({ message: "Archivo requerido" });
         }
 
-        const filePath = `archivos/${Date.now()}-${file.originalname}`;
+        const filePath = `${Date.now()}-${file.originalname}`;
 
-        const { error } = await supabase.storage
+        // 1️⃣ SUBIR ARCHIVO
+        const { error: uploadError } = await supabase.storage
             .from("archivos")
             .upload(filePath, file.buffer, {
                 contentType: file.mimetype,
             });
 
-        if (error) throw error;
+        if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage
-            .from("archivos")
-            .getPublicUrl(filePath);
-
-        const url_archivo = data.publicUrl;
-
+        // 2️⃣ GUARDAR RUTA EN DB
         await guardarArchivo({
             id_consulta,
             id_paciente,
             tipo,
-            url_archivo,
+            ruta_archivo: filePath,
             nombre_archivo: file.originalname,
             descripcion,
         });
 
         res.json({
             message: "Archivo subido correctamente",
-            url: url_archivo,
         });
     } catch (error) {
         console.error(error);
@@ -49,7 +44,26 @@ const listarArchivos = async (req, res) => {
     try {
         const { id_consulta, id_paciente } = req.query;
         const archivos = await obtenerArchivos({ id_consulta, id_paciente });
-        res.json({ archivos });
+
+        const archivosConUrl = await Promise.all(
+            archivos.map(async (archivo) => {
+                const { data, error } = await supabase.storage
+                    .from("archivos")
+                    .createSignedUrl(archivo.ruta_archivo, 60 * 60); // 1 hora
+
+                if (error) {
+                    console.error(error);
+                    return archivo;
+                }
+
+                return {
+                    ...archivo,
+                    url_archivo: data.signedUrl,
+                };
+            })
+        );
+
+        res.json({ archivos: archivosConUrl });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error al obtener archivos" });
