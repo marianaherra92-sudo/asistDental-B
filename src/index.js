@@ -27,6 +27,7 @@ const movimientosProductosRoutes = require('./modules/inventario/movimientos_pro
 const rolesRoutes = require('./routes/rolesRoutes'); 
 const usuariosRoutes = require('./routes/usuariosRoutes');
 const archivosRoutes = require("./modules/archivos/archivosRoutes");
+const adminSaasRoutes = require('./routes/adminSaasRoutes');
 const app = express();
 
 app.use(helmet());
@@ -58,6 +59,7 @@ app.use('/roles', rolesRoutes);
 app.use('/usuarios', usuariosRoutes);
 app.use("/uploads", express.static("/var/www/uploads"));
 app.use("/api/archivos", archivosRoutes);
+app.use("/saas", adminSaasRoutes);
 app.use(errorHandler);
 
 
